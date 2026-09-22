@@ -1,0 +1,24 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net10.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Wcwidth" Version="4.0.1" />
+    </ItemGroup>
+
+    <Target Name="ExposePosixLineEditorNative" 
+            BeforeTargets="GetCopyToOutputDirectoryItems;GetCopyToPublishDirectoryItems">
+
+        <ItemGroup>
+            <ContentWithTargetPath Include="$(MSBuildProjectDirectory)/runtimes/linux-x64/native/libmajo_line_editor.so"
+                                   TargetPath="libmajo_line_editor.so"
+                                   CopyToOutputDirectory="PreserveNewest"
+                                   CopyToPublishDirectory="PreserveNewest" />
+        </ItemGroup>
+
+    </Target>
+</Project>

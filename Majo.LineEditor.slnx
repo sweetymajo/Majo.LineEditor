@@ -1,0 +1,8 @@
+<Solution>
+  <Folder Name="/Meta/">
+    <File Path="README.md" />
+    <File Path="README.zh-CN.md" />
+  </Folder>
+  <Project Path="Majo.LineEditor.Test/Majo.LineEditor.Test.csproj" />
+  <Project Path="Majo.LineEditor/Majo.LineEditor.csproj" />
+</Solution>

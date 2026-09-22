@@ -1,0 +1,8 @@
+bin/
+obj/
+/packages/
+riderModule.iml
+/_ReSharper.Caches/
+/.idea/
+/Majo.LineEditor.sln.DotSettings.user
+/Majo.LineEditor/Backends/Posix/Native/.idea/
