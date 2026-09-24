@@ -6,7 +6,7 @@
         <Nullable>enable</Nullable>
         
         <PackageId>Majo.LineEditor</PackageId>
-        <Version>0.0.1</Version>
+        <Version>0.0.2</Version>
         <Authors>Sweety Majo</Authors>
         <Description>A small, cross-platform interactive line editor for .NET.</Description>
         <PackageTags>terminal;console;line-editor;cli;linenoise</PackageTags>
@@ -18,7 +18,7 @@
         <EmbedUntrackedSources>true</EmbedUntrackedSources>
         <PackageProjectUrl>https://github.com/sweetymajo/Majo.LineEditor</PackageProjectUrl>
         
-        <PackageReadmeFile>README.md</PackageReadmeFile>
+        <PackageReadmeFile>README.nuget.md</PackageReadmeFile>
         <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
         
         <IncludeSymbols>true</IncludeSymbols>
@@ -34,7 +34,7 @@
     </ItemGroup>
     
     <ItemGroup>
-        <None Include="../README.md" Pack="true" PackagePath="/" />
+        <None Include="README.nuget.md" Pack="true" PackagePath="/" />
         <None Include="../LICENSE.txt" Pack="true" PackagePath="/" />
         
         <None Include="runtimes/linux-x64/native/libmajo_line_editor.so" Pack="true"

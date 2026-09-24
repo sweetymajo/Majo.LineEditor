@@ -6,6 +6,7 @@
 
 Native console behavior on Windows, a linenoise-based POSIX backend on Linux, and a deliberately small managed API for command-line applications.
 
+[![NuGet](https://img.shields.io/nuget/v/Majo.LineEditor?style=flat-square&logo=nuget&logoColor=white)](https://www.nuget.org/packages/Majo.LineEditor)
 [![.NET](https://img.shields.io/badge/.NET-8.0%20%7C%2010.0-512BD4?style=flat-square&logo=dotnet&logoColor=white)](https://dotnet.microsoft.com/)
 ![Windows](https://img.shields.io/badge/Windows-supported-0078D4?style=flat-square&logo=windows&logoColor=white)
 ![Linux x64](https://img.shields.io/badge/Linux-x64-FCC624?style=flat-square&logo=linux&logoColor=black)
@@ -47,9 +48,17 @@ This makes it possible, for example, to publish a `linux-x64` application direct
 - Prebuilt `linux-x64` native runtime asset
 - No GCC/CMake invocation during normal `.NET` build or publish
 
+## Installation
+
+`Majo.LineEditor` is available on [NuGet.org](https://www.nuget.org/packages/Majo.LineEditor):
+
+```bash
+dotnet add package Majo.LineEditor
+```
+
 ## Quick Start
 
-Reference `Majo.LineEditor` from your application and create one editor instance:
+Create one editor instance:
 
 ```csharp
 using Majo.LineEditor;

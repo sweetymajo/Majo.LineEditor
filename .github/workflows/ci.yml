@@ -84,7 +84,7 @@ jobs:
           grep -Fq "lib/net8.0/Majo.LineEditor.dll" package-contents.txt
           grep -Fq "lib/net10.0/Majo.LineEditor.dll" package-contents.txt
           grep -Fq "runtimes/linux-x64/native/libmajo_line_editor.so" package-contents.txt
-          grep -Fq "README.md" package-contents.txt
+          grep -Fq "README.nuget.md" package-contents.txt
           grep -Fq "LICENSE.txt" package-contents.txt
 
           if ! find artifacts/nuget \

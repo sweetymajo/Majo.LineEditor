@@ -6,6 +6,7 @@
 
 Windows 使用原生控制台能力，Linux 使用基于 linenoise 的 POSIX 后端，并通过尽可能精简的托管 API 为命令行程序提供稳定的交互式输入体验。
 
+[![NuGet](https://img.shields.io/nuget/v/Majo.LineEditor?style=flat-square&logo=nuget&logoColor=white)](https://www.nuget.org/packages/Majo.LineEditor)
 [![.NET](https://img.shields.io/badge/.NET-8.0%20%7C%2010.0-512BD4?style=flat-square&logo=dotnet&logoColor=white)](https://dotnet.microsoft.com/)
 ![Windows](https://img.shields.io/badge/Windows-supported-0078D4?style=flat-square&logo=windows&logoColor=white)
 ![Linux x64](https://img.shields.io/badge/Linux-x64-FCC624?style=flat-square&logo=linux&logoColor=black)
@@ -47,9 +48,17 @@ Windows 使用原生控制台能力，Linux 使用基于 linenoise 的 POSIX 后
 - 预编译的 `linux-x64` native runtime
 - 普通 `.NET build` / `publish` 不调用 GCC 或 CMake
 
+## 安装
+
+`Majo.LineEditor` 已发布至 [NuGet.org](https://www.nuget.org/packages/Majo.LineEditor)：
+
+```bash
+dotnet add package Majo.LineEditor
+```
+
 ## 快速开始
 
-在应用中引用 `Majo.LineEditor`，然后创建一个编辑器实例：
+创建一个 `LineEditor` 实例：
 
 ```csharp
 using Majo.LineEditor;
