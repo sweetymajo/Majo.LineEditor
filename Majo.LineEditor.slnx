@@ -1,5 +1,21 @@
 <Solution>
+  <Folder Name="/GitHub/">
+    <File Path=".github/dependabot.yml" />
+    <File Path=".github/pull_request_template.md" />
+  </Folder>
+  <Folder Name="/GitHub/Issue Templates/">
+    <File Path=".github/ISSUE_TEMPLATE/bug_report.md" />
+    <File Path=".github/ISSUE_TEMPLATE/config.yml" />
+    <File Path=".github/ISSUE_TEMPLATE/feature_request.md" />
+  </Folder>
+  <Folder Name="/GitHub/Workflows/">
+    <File Path=".github/workflows/ci.yml" />
+    <File Path=".github/workflows/publish-nuget.yml" />
+  </Folder>
   <Folder Name="/Meta/">
+    <File Path="CONTRIBUTING.md" />
+    <File Path="LICENSE.txt" />
+    <File Path="NuGet.config" />
     <File Path="README.md" />
     <File Path="README.zh-CN.md" />
   </Folder>

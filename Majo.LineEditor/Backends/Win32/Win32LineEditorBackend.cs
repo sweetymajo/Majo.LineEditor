@@ -4,6 +4,12 @@ using System.Runtime.Versioning;
 using System.Text;
 using Wcwidth;
 
+#if NET9_0_OR_GREATER
+using LockType = System.Threading.Lock;
+#else
+using LockType = System.Object;
+#endif
+
 namespace Majo.LineEditor.Backends.Win32;
 
 /// <summary>
@@ -130,12 +136,12 @@ internal class Win32LineEditorBackend : ILineEditorBackend
     /// <summary>
     /// Lock protecting managed state
     /// </summary>
-    private readonly Lock _stateLock = new();
+    private readonly LockType _stateLock = new();
 
     /// <summary>
     /// Lock serializing console access
     /// </summary>
-    private readonly Lock _consoleLock = new();
+    private readonly LockType _consoleLock = new();
     
     /// <summary>
     /// Time required for resize activity to settle in milliseconds

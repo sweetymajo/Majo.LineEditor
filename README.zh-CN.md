@@ -6,7 +6,7 @@
 
 Windows 使用原生控制台能力，Linux 使用基于 linenoise 的 POSIX 后端，并通过尽可能精简的托管 API 为命令行程序提供稳定的交互式输入体验。
 
-[![.NET](https://img.shields.io/badge/.NET-10.0-512BD4?style=flat-square&logo=dotnet&logoColor=white)](https://dotnet.microsoft.com/)
+[![.NET](https://img.shields.io/badge/.NET-8.0%20%7C%2010.0-512BD4?style=flat-square&logo=dotnet&logoColor=white)](https://dotnet.microsoft.com/)
 ![Windows](https://img.shields.io/badge/Windows-supported-0078D4?style=flat-square&logo=windows&logoColor=white)
 ![Linux x64](https://img.shields.io/badge/Linux-x64-FCC624?style=flat-square&logo=linux&logoColor=black)
 ![C11](https://img.shields.io/badge/native-C11-A8B9CC?style=flat-square&logo=c&logoColor=black)
@@ -197,32 +197,7 @@ dotnet publish -r linux-x64
 
 都不会调用 GCC、CMake、WSL 或 Linux 虚拟机。构建过程只会把仓库中已经准备好的 native library 带入最终输出。
 
-### 重新编译 POSIX native library
-
-只有在 native 源码发生变化时，才需要重新编译 `.so`。
-
-需要：
-
-- Linux 兼容环境
-- GCC
-- CMake 3.20 或更高版本
-
-例如：
-
-```bash
-cd Majo.LineEditor/Backends/Posix/Native
-
-cmake -S . -B cmake-build-release -DCMAKE_BUILD_TYPE=Release
-cmake --build cmake-build-release
-```
-
-CMake 会生成 `libmajo_line_editor.so`，并把最终库复制到：
-
-```text
-Majo.LineEditor/runtimes/linux-x64/native/libmajo_line_editor.so
-```
-
-在 Windows 上使用 **CLion + WSL GCC Toolchain** 也是一个很方便的 native 开发方式。
+只有 native 源码发生变化时才需要重新编译 `.so`。完整的开发环境要求和 native library 构建方式请参阅 [CONTRIBUTING.md](./CONTRIBUTING.md)。
 
 > `Wcwidth` 属于 Windows 托管后端；POSIX native library 的编译和链接不包含它。
 
@@ -249,6 +224,14 @@ libmajo_line_editor.so
 `Majo.LineEditor` 面向真实的交互式 Console / TTY。
 
 重定向后的标准输入或标准输出不属于受支持的编辑环境。编辑器同时限制单进程只存在一个活动的行编辑器实例，避免多个后端争用同一套终端状态。
+
+## 参与开发
+
+欢迎参与 `Majo.LineEditor` 的开发。
+
+开发环境、交互式测试、本地 NuGet 包验证、POSIX native 开发以及 vendored linenoise 的维护规则，请参阅 [CONTRIBUTING.md](./CONTRIBUTING.md)。
+
+`CONTRIBUTING.md` 目前使用英文编写。
 
 ## 设计原则
 

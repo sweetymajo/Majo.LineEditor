@@ -1,0 +1,159 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  build-windows:
+    name: Build Windows
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: |
+            8.0.x
+            10.0.x
+
+      # NuGet.Config contains this local source.
+      # It must exist before restore on a clean runner.
+      - name: Prepare local NuGet source
+        shell: pwsh
+        run: New-Item -ItemType Directory -Force artifacts/nuget | Out-Null
+
+      - name: Restore
+        run: dotnet restore Majo.LineEditor.slnx
+
+      - name: Build
+        run: dotnet build Majo.LineEditor.slnx -c Release --no-restore
+
+
+  package:
+    name: Build, Pack and Validate
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: |
+            8.0.x
+            10.0.x
+
+      - name: Prepare local NuGet source
+        run: mkdir -p artifacts/nuget
+
+      - name: Restore
+        run: dotnet restore Majo.LineEditor.slnx
+
+      - name: Build
+        run: dotnet build Majo.LineEditor.slnx -c Release --no-restore
+
+      - name: Pack
+        run: dotnet pack Majo.LineEditor/Majo.LineEditor.csproj -c Release --no-build
+
+      - name: Validate NuGet package
+        shell: bash
+        run: |
+          set -e
+
+          PACKAGE=$(find artifacts/nuget \
+            -maxdepth 1 \
+            -name 'Majo.LineEditor.*.nupkg' \
+            -print \
+            -quit)
+
+          if [ -z "$PACKAGE" ]; then
+            echo "Majo.LineEditor .nupkg was not generated."
+            exit 1
+          fi
+
+          unzip -l "$PACKAGE" > package-contents.txt
+
+          grep -Fq "lib/net8.0/Majo.LineEditor.dll" package-contents.txt
+          grep -Fq "lib/net10.0/Majo.LineEditor.dll" package-contents.txt
+          grep -Fq "runtimes/linux-x64/native/libmajo_line_editor.so" package-contents.txt
+          grep -Fq "README.md" package-contents.txt
+          grep -Fq "LICENSE.txt" package-contents.txt
+
+          if ! find artifacts/nuget \
+            -maxdepth 1 \
+            -name 'Majo.LineEditor.*.snupkg' \
+            -print \
+            -quit | grep -q .; then
+            echo "Majo.LineEditor .snupkg was not generated."
+            exit 1
+          fi
+
+      - name: Restore Test project from local NuGet package
+        run: >
+          dotnet restore
+          Majo.LineEditor.Test/Majo.LineEditor.Test.csproj
+          -p:UsePackageReference=true
+          --force
+
+      - name: Build Test project from local NuGet package
+        run: >
+          dotnet build
+          Majo.LineEditor.Test/Majo.LineEditor.Test.csproj
+          -c Release
+          --no-restore
+          -p:UsePackageReference=true
+
+      - name: Publish Windows package consumer
+        run: >
+          dotnet publish
+          Majo.LineEditor.Test/Majo.LineEditor.Test.csproj
+          -c Release
+          -r win-x64
+          --self-contained false
+          -p:UsePackageReference=true
+          -o artifacts/publish/win-x64
+
+      - name: Publish Linux package consumer
+        run: >
+          dotnet publish
+          Majo.LineEditor.Test/Majo.LineEditor.Test.csproj
+          -c Release
+          -r linux-x64
+          --self-contained false
+          -p:UsePackageReference=true
+          -o artifacts/publish/linux-x64
+
+      - name: Validate runtime assets
+        shell: bash
+        run: |
+          set -e
+
+          test -f artifacts/publish/win-x64/Wcwidth.dll
+          test ! -f artifacts/publish/win-x64/libmajo_line_editor.so
+
+          test -f artifacts/publish/linux-x64/Wcwidth.dll
+          test -f artifacts/publish/linux-x64/libmajo_line_editor.so
+
+      - name: Upload NuGet packages
+        uses: actions/upload-artifact@v7
+        with:
+          name: Majo.LineEditor-NuGet
+          path: |
+            artifacts/nuget/*.nupkg
+            artifacts/nuget/*.snupkg
+          if-no-files-found: error
+
+      - name: Upload published binaries
+        uses: actions/upload-artifact@v7
+        with:
+          name: Majo.LineEditor-Publish
+          path: artifacts/publish/
+          if-no-files-found: error

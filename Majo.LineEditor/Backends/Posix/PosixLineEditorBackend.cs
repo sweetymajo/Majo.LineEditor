@@ -1,6 +1,12 @@
 ﻿using System.Runtime.InteropServices;
 using Majo.LineEditor.Backends.Posix.Native;
 
+#if NET9_0_OR_GREATER
+using LockType = System.Threading.Lock;
+#else
+using LockType = System.Object;
+#endif
+
 namespace Majo.LineEditor.Backends.Posix;
 
 /// <summary>
@@ -51,12 +57,12 @@ internal class PosixLineEditorBackend : ILineEditorBackend
     /// <summary>
     /// Lock protecting managed state
     /// </summary>
-    private readonly Lock _stateLock = new();
+    private readonly LockType _stateLock = new();
 
     /// <summary>
     /// Lock serializing native calls
     /// </summary>
-    private readonly Lock _nativeLock = new();
+    private readonly LockType _nativeLock = new();
 
     /// <summary>
     /// Initializes a new POSIX line editor backend

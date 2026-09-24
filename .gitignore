@@ -1,8 +1,13 @@
+# ----------- Projects -----------
 bin/
 obj/
 /packages/
+/Majo.LineEditor.sln.DotSettings.user
+
+# ----------- Rider -----------
 riderModule.iml
 /_ReSharper.Caches/
-/.idea/
-/Majo.LineEditor.sln.DotSettings.user
-/Majo.LineEditor/Backends/Posix/Native/.idea/
+.idea/
+
+# ----------- Custom -----------
+/artifacts/

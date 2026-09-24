@@ -1,0 +1,139 @@
+﻿name: Publish NuGet
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  publish:
+    name: Publish NuGet
+    runs-on: ubuntu-latest
+
+    environment: nuget
+
+    permissions:
+      contents: write
+      id-token: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: |
+            8.0.x
+            10.0.x
+
+      - name: Resolve version
+        shell: bash
+        run: |
+          VERSION=$(dotnet msbuild Majo.LineEditor/Majo.LineEditor.csproj \
+            -getProperty:Version \
+            -nologo)
+
+          if [[ ! "$VERSION" =~ ^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$ ]]; then
+            echo "Invalid package version: $VERSION"
+            echo "Expected version format: x.y.z"
+            exit 1
+          fi
+
+          echo "PACKAGE_VERSION=$VERSION" >> "$GITHUB_ENV"
+          echo "RELEASE_TAG=v$VERSION" >> "$GITHUB_ENV"
+
+          echo "Package version: $VERSION"
+          echo "Release tag: v$VERSION"
+
+      - name: Validate release tag
+        shell: bash
+        run: |
+          if git ls-remote \
+            --exit-code \
+            --tags \
+            origin \
+            "refs/tags/${RELEASE_TAG}" > /dev/null 2>&1; then
+
+            echo "Tag ${RELEASE_TAG} already exists."
+            exit 1
+          fi
+
+      - name: Prepare local NuGet source
+        run: mkdir -p artifacts/nuget
+
+      - name: Restore
+        run: dotnet restore Majo.LineEditor.slnx
+
+      - name: Build
+        run: dotnet build Majo.LineEditor.slnx -c Release --no-restore
+
+      - name: Pack
+        run: >
+          dotnet pack
+          Majo.LineEditor/Majo.LineEditor.csproj
+          -c Release
+          --no-build
+
+      - name: Validate NuGet package
+        shell: bash
+        run: |
+          set -e
+
+          PACKAGE="artifacts/nuget/Majo.LineEditor.${PACKAGE_VERSION}.nupkg"
+          SYMBOL_PACKAGE="artifacts/nuget/Majo.LineEditor.${PACKAGE_VERSION}.snupkg"
+
+          if [ ! -f "$PACKAGE" ]; then
+            echo "NuGet package was not generated:"
+            echo "$PACKAGE"
+            exit 1
+          fi
+
+          if [ ! -f "$SYMBOL_PACKAGE" ]; then
+            echo "Symbol package was not generated:"
+            echo "$SYMBOL_PACKAGE"
+            exit 1
+          fi
+
+          unzip -l "$PACKAGE" > package-contents.txt
+
+          grep -Fq "lib/net8.0/Majo.LineEditor.dll" package-contents.txt
+          grep -Fq "lib/net10.0/Majo.LineEditor.dll" package-contents.txt
+          grep -Fq "runtimes/linux-x64/native/libmajo_line_editor.so" package-contents.txt
+          grep -Fq "README.md" package-contents.txt
+          grep -Fq "LICENSE.txt" package-contents.txt
+
+      - name: Upload NuGet packages
+        uses: actions/upload-artifact@v7
+        with:
+          name: Majo.LineEditor-NuGet
+          path: |
+            artifacts/nuget/*.nupkg
+            artifacts/nuget/*.snupkg
+          if-no-files-found: error
+
+      - name: NuGet login
+        id: login
+        uses: NuGet/login@v1
+        with:
+          user: ${{ vars.NUGET_USER }}
+
+      - name: Publish to NuGet.org
+        run: >
+          dotnet nuget push
+          artifacts/nuget/*.nupkg
+          --api-key ${{ steps.login.outputs.NUGET_API_KEY }}
+          --source https://api.nuget.org/v3/index.json
+
+      - name: Create Git tag
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git tag -a "${RELEASE_TAG}" \
+            "$GITHUB_SHA" \
+            -m "Majo.LineEditor ${PACKAGE_VERSION}"
+
+          git push origin "${RELEASE_TAG}"

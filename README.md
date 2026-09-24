@@ -6,7 +6,7 @@
 
 Native console behavior on Windows, a linenoise-based POSIX backend on Linux, and a deliberately small managed API for command-line applications.
 
-[![.NET](https://img.shields.io/badge/.NET-10.0-512BD4?style=flat-square&logo=dotnet&logoColor=white)](https://dotnet.microsoft.com/)
+[![.NET](https://img.shields.io/badge/.NET-8.0%20%7C%2010.0-512BD4?style=flat-square&logo=dotnet&logoColor=white)](https://dotnet.microsoft.com/)
 ![Windows](https://img.shields.io/badge/Windows-supported-0078D4?style=flat-square&logo=windows&logoColor=white)
 ![Linux x64](https://img.shields.io/badge/Linux-x64-FCC624?style=flat-square&logo=linux&logoColor=black)
 ![C11](https://img.shields.io/badge/native-C11-A8B9CC?style=flat-square&logo=c&logoColor=black)
@@ -197,32 +197,7 @@ dotnet publish -r linux-x64
 
 does not invoke GCC, CMake, WSL, or a Linux VM. The checked-in native library is copied into the final application output.
 
-### Rebuilding the POSIX native library
-
-Rebuild the native library only when the native source changes.
-
-Requirements:
-
-- Linux-compatible environment
-- GCC
-- CMake 3.20 or newer
-
-For example:
-
-```bash
-cd Majo.LineEditor/Backends/Posix/Native
-
-cmake -S . -B cmake-build-release -DCMAKE_BUILD_TYPE=Release
-cmake --build cmake-build-release
-```
-
-The CMake project builds `libmajo_line_editor.so` and copies the resulting library to:
-
-```text
-Majo.LineEditor/runtimes/linux-x64/native/libmajo_line_editor.so
-```
-
-Using CLion with a WSL GCC toolchain is also supported and is a convenient Windows development workflow.
+The native library only needs to be rebuilt when the native source changes. Development requirements and rebuild instructions are documented in [CONTRIBUTING.md](./CONTRIBUTING.md).
 
 > `Wcwidth` is part of the managed Windows backend. It is not compiled or linked into the POSIX native library.
 
@@ -249,6 +224,12 @@ This keeps ordinary .NET development platform-independent while still allowing t
 `Majo.LineEditor` is intended for a real interactive console/TTY.
 
 Redirected standard input or output is not a supported editing environment. The editor also enforces a single active line-editor instance for the process so the backends do not compete for ownership of the terminal state.
+
+## Contributing
+
+Contributions are welcome.
+
+Development setup, interactive testing, local NuGet package validation, POSIX native development, and vendored linenoise maintenance are documented in [CONTRIBUTING.md](./CONTRIBUTING.md).
 
 ## Design Goals
 
