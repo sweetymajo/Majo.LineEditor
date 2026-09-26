@@ -13,6 +13,7 @@
     <File Path=".github/workflows/publish-nuget.yml" />
   </Folder>
   <Folder Name="/Meta/">
+    <File Path="CHANGELOG.md" />
     <File Path="CONTRIBUTING.md" />
     <File Path="LICENSE.txt" />
     <File Path="NuGet.config" />
